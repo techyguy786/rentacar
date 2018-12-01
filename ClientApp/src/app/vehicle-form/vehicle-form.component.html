@@ -19,4 +19,10 @@
       </option>
     </select>
   </div>
+  <h2>Features</h2>
+  <div *ngFor="let f of features" class="checkbox">
+    <label for="features{{ f.featureId }}">
+      <input type="checkbox" id="features{{ f.featureId }}"> {{ f.name }}
+    </label>
+  </div>
 </form> 
