@@ -22,6 +22,18 @@ namespace vega.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateVehicle([FromBody] VehicleDto vehicleDto)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            // if API is public and we want to show the message to the user that
+            // the property is missing. So,
+            var model = await context.Models.FindAsync(vehicleDto.ModelId);
+            if (model == null)
+            {
+                ModelState.AddModelError("ModelId", "Invalid Model Id");
+                return BadRequest(ModelState);
+            }
+
             var vehicle = mapper.Map<VehicleDto, Vehicle>(vehicleDto);
             vehicle.LastUpdate = DateTime.Now;
             

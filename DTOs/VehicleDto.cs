@@ -11,6 +11,8 @@ namespace vega.DTOs
         public int VehicleId { get; set; }
         public int ModelId { get; set; }
         public bool isRegistered { get; set; }
+
+        [Required]
         public ContactDto Contact { get; set; }
         public ICollection<int> Features { get; set; }
 
