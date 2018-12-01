@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using vega.DTOs;
@@ -25,15 +26,27 @@ namespace vega.Mapping
 
             // API to Domain
             CreateMap<VehicleDto, Vehicle>()
+                .ForMember(v => v.VehicleId, opt => opt.Ignore())
                 .ForMember(v => v.ContactName, opt => opt.MapFrom(vd => vd.Contact.Name))
                 .ForMember(v => v.ContactEmail, opt => opt.MapFrom(vd => vd.Contact.Email))
                 .ForMember(v => v.ContactPhone, opt => opt.MapFrom(vd => vd.Contact.Phone))
-                // VehicleFeatures is domain class & Features is int array. So we need to
-                // convert it into domain type
-                .ForMember(v => v.VehicleFeatures, opt => opt.MapFrom(vd => vd.Features
-                    .Select(id => new VehicleFeature {
-                        FeatureId = id
-                    })));
+                .ForMember(v => v.VehicleFeatures, opt => opt.Ignore())
+                .AfterMap((vd, v) => {
+                    // Remove Unselected Features
+                    var removedFeatures = new List<VehicleFeature>();
+                    foreach (var f in v.VehicleFeatures)
+                        if (!vd.Features.Contains(f.FeatureId))
+                            removedFeatures.Add(f);
+                    foreach (var f in removedFeatures)
+                        v.VehicleFeatures.Remove(f);
+
+                    // Add new features
+                    foreach (var id in vd.Features)
+                        if (!v.VehicleFeatures.Any(f => f.FeatureId == id))
+                            v.VehicleFeatures.Add(new VehicleFeature {
+                                FeatureId = id
+                            });
+                });
         }
     }
 }
