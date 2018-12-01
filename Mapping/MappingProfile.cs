@@ -13,6 +13,15 @@ namespace vega.Mapping
             CreateMap<Make, MakeDto>();
             CreateMap<Model, ModelDto>();
             CreateMap<Feature, FeatureDto>();
+            CreateMap<Vehicle, VehicleDto>()
+                .ForMember(vd => vd.Contact, opt => opt.MapFrom(v => new ContactDto {
+                    Name = v.ContactName,
+                    Email = v.ContactEmail,
+                    Phone = v.ContactPhone
+                }))
+                .ForMember(vd => vd.Features, opt => opt.MapFrom(v => 
+                    v.VehicleFeatures.Select(vf => vf.FeatureId)));
+
 
             // API to Domain
             CreateMap<VehicleDto, Vehicle>()
