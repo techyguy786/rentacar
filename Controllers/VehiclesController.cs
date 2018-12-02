@@ -13,14 +13,14 @@ namespace vega.Controllers
     public class VehiclesController : Controller
     {
         private readonly IMapper mapper;
-        private readonly VegaDbContext context;
         private readonly IVehicleRepository repository;
+        private readonly IUnitOfWork unitOfWork;
 
-        public VehiclesController(IMapper mapper, VegaDbContext context,
-            IVehicleRepository repository)
+        public VehiclesController(IMapper mapper, IVehicleRepository repository, 
+            IUnitOfWork unitOfWork)
         {
-            this.context = context;
             this.repository = repository;
+            this.unitOfWork = unitOfWork;
             this.mapper = mapper;
         }
 
@@ -30,23 +30,11 @@ namespace vega.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // if API is public and we want to show the message to the user that
-            // the property is missing. So,
-            var model = await context.Models.FindAsync(vehicleDto.ModelId);
-            if (model == null)
-            {
-                ModelState.AddModelError("ModelId", "Invalid Model Id");
-                return BadRequest(ModelState);
-            }
-
             var vehicle = mapper.Map<SaveVehicleDto, Vehicle>(vehicleDto);
             vehicle.LastUpdate = DateTime.Now;
             
             repository.Add(vehicle);
-            await context.SaveChangesAsync();
-
-            await context.Models.Include(m => m.Make)
-                .SingleOrDefaultAsync(m => m.ModelId == vehicle.ModelId);
+            await unitOfWork.CompleteAsync();
             
             vehicle = await repository.GetVehicle(vehicle.VehicleId);
 
@@ -60,13 +48,6 @@ namespace vega.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var model = await context.Models.FindAsync(vehicleDto.ModelId);
-            if (model == null)
-            {
-                ModelState.AddModelError("ModelId", "Invalid Model Id");
-                return BadRequest(ModelState);
-            }
-
             var vehicle = await repository.GetVehicle(id);
 
             if (vehicle == null)
@@ -76,7 +57,7 @@ namespace vega.Controllers
             mapper.Map<SaveVehicleDto, Vehicle>(vehicleDto, vehicle);
             vehicle.LastUpdate = DateTime.Now;
             
-            await context.SaveChangesAsync();
+            await unitOfWork.CompleteAsync();
 
             var result = mapper.Map<Vehicle, VehicleDto>(vehicle);
             return Ok(result);
@@ -85,13 +66,13 @@ namespace vega.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehicle(int id)
         {
-            var vehicle = await repository.GetVehicle(id);
+            var vehicle = await repository.GetVehicle(id, includeRelated: false);
 
             if (vehicle == null)
                 return NotFound();
             
             repository.Delete(vehicle);
-            await context.SaveChangesAsync();
+            await unitOfWork.CompleteAsync();
 
             return Ok(id);
         }
@@ -99,7 +80,7 @@ namespace vega.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVehicle(int id)
         {
-            var vehicle = await repository.GetVehicle(id, includeRelated: false);
+            var vehicle = await repository.GetVehicle(id);
 
             if (vehicle == null)
                 return NotFound();
