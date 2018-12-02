@@ -42,7 +42,7 @@ namespace vega.Controllers
             var vehicle = mapper.Map<SaveVehicleDto, Vehicle>(vehicleDto);
             vehicle.LastUpdate = DateTime.Now;
             
-            context.Vehicles.Add(vehicle);
+            repository.Add(vehicle);
             await context.SaveChangesAsync();
 
             await context.Models.Include(m => m.Make)
@@ -85,12 +85,12 @@ namespace vega.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVehicle(int id)
         {
-            var vehicle = await context.Vehicles.FindAsync(id);
+            var vehicle = await repository.GetVehicle(id);
 
             if (vehicle == null)
                 return NotFound();
             
-            context.Remove(vehicle);
+            repository.Delete(vehicle);
             await context.SaveChangesAsync();
 
             return Ok(id);
@@ -99,7 +99,7 @@ namespace vega.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetVehicle(int id)
         {
-            var vehicle = await repository.GetVehicle(id);
+            var vehicle = await repository.GetVehicle(id, includeRelated: false);
 
             if (vehicle == null)
                 return NotFound();
