@@ -3,14 +3,12 @@ using System.Collections.ObjectModel;
 
 namespace vega.DTOs
 {
-    public class MakeDto
+    public class MakeDto : KeyValuePairDto
     {
-        public int MakeId { get; set; }
-        public string Name { get; set; }
-        public ICollection<ModelDto> Models { get; set; }
+        public ICollection<KeyValuePairDto> Models { get; set; }
         public MakeDto()
         {
-            Models = new Collection<ModelDto>();
+            Models = new Collection<KeyValuePairDto>();
         }
     }
 }

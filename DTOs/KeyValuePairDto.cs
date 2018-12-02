@@ -1,8 +1,8 @@
 namespace vega.DTOs
 {
-    public class FeatureDto
+    public class KeyValuePairDto
     {
-        public int FeatureId { get; set; }
+        public int Id { get; set; }
         public string Name { get; set; }
     }
 }

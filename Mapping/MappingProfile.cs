@@ -12,9 +12,10 @@ namespace vega.Mapping
         {
             // Domain to API
             CreateMap<Make, MakeDto>();
-            CreateMap<Model, ModelDto>();
-            CreateMap<Feature, FeatureDto>();
-            CreateMap<Vehicle, VehicleDto>()
+            CreateMap<Make, KeyValuePairDto>();
+            CreateMap<Model, KeyValuePairDto>();
+            CreateMap<Feature, KeyValuePairDto>();
+            CreateMap<Vehicle, SaveVehicleDto>()
                 .ForMember(vd => vd.Contact, opt => opt.MapFrom(v => new ContactDto {
                     Name = v.ContactName,
                     Email = v.ContactEmail,
@@ -22,10 +23,23 @@ namespace vega.Mapping
                 }))
                 .ForMember(vd => vd.Features, opt => opt.MapFrom(v => 
                     v.VehicleFeatures.Select(vf => vf.FeatureId)));
+            CreateMap<Vehicle, VehicleDto>()
+                .ForMember(vd => vd.Make, opt => opt.MapFrom(v => v.Model.Make))
+                .ForMember(vd => vd.Contact, opt => opt.MapFrom(v => new ContactDto {
+                    Name = v.ContactName,
+                    Email = v.ContactEmail,
+                    Phone = v.ContactPhone
+                }))
+                .ForMember(vd => vd.Features, opt => opt.MapFrom(v => 
+                    v.VehicleFeatures.Select(vf => new KeyValuePairDto 
+                    { 
+                        Id = vf.Feature.FeatureId,
+                        Name = vf.Feature.Name
+                    })));
 
 
             // API to Domain
-            CreateMap<VehicleDto, Vehicle>()
+            CreateMap<SaveVehicleDto, Vehicle>()
                 .ForMember(v => v.VehicleId, opt => opt.Ignore())
                 .ForMember(v => v.ContactName, opt => opt.MapFrom(vd => vd.Contact.Name))
                 .ForMember(v => v.ContactEmail, opt => opt.MapFrom(vd => vd.Contact.Email))
