@@ -41,7 +41,17 @@ namespace vega.Controllers
             context.Vehicles.Add(vehicle);
             await context.SaveChangesAsync();
 
-            var result = mapper.Map<Vehicle, SaveVehicleDto>(vehicle);
+            await context.Models.Include(m => m.Make)
+                .SingleOrDefaultAsync(m => m.ModelId == vehicle.ModelId);
+            
+            vehicle = await context.Vehicles
+                .Include(v => v.VehicleFeatures)
+                    .ThenInclude(vf => vf.Feature)
+                .Include(v => v.Model)
+                    .ThenInclude(m => m.Make)
+                .SingleOrDefaultAsync(v => v.VehicleId == vehicle.VehicleId);
+
+            var result = mapper.Map<Vehicle, VehicleDto>(vehicle);
             return Ok(result);
         }
 
@@ -58,8 +68,13 @@ namespace vega.Controllers
                 return BadRequest(ModelState);
             }
 
-            var vehicle = await context.Vehicles.Include(v => v.VehicleFeatures)
+            var vehicle = await context.Vehicles
+                .Include(v => v.VehicleFeatures)
+                    .ThenInclude(vf => vf.Feature)
+                .Include(v => v.Model)
+                    .ThenInclude(m => m.Make)
                 .SingleOrDefaultAsync(v => v.VehicleId == id);
+
             if (vehicle == null)
             {
                 return NotFound("Invalid Id");
@@ -69,7 +84,7 @@ namespace vega.Controllers
             
             await context.SaveChangesAsync();
 
-            var result = mapper.Map<Vehicle, SaveVehicleDto>(vehicle);
+            var result = mapper.Map<Vehicle, VehicleDto>(vehicle);
             return Ok(result);
         }
 
