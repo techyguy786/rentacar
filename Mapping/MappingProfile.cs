@@ -16,7 +16,8 @@ namespace vega.Mapping
             CreateMap<Make, KeyValuePairDto>();
             CreateMap<Model, KeyValuePairDto>()
                 .ForMember(kv => kv.Id, opt => opt.MapFrom(m => m.ModelId));
-            CreateMap<Feature, KeyValuePairDto>();
+            CreateMap<Feature, KeyValuePairDto>()
+                .ForMember(kv => kv.Id, opt => opt.MapFrom(m => m.FeatureId));
             CreateMap<Vehicle, SaveVehicleDto>()
                 .ForMember(vd => vd.Contact, opt => opt.MapFrom(v => new ContactDto {
                     Name = v.ContactName,
