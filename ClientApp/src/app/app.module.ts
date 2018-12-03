@@ -13,6 +13,11 @@ import { FetchDataComponent } from './fetch-data/fetch-data.component';
 import { VehicleFormComponent } from './vehicle-form/vehicle-form.component';
 import { VehicleService } from './services/vehicle.service';
 import { AppErrorHandler } from './app-error.interceptor';
+import * as Sentry from '@sentry/browser';
+
+Sentry.init({
+  dsn: 'https://aed9e0e2043d4ccea2a5013cff5d5526@sentry.io/1336054'
+});
 
 @NgModule({
   declarations: [
