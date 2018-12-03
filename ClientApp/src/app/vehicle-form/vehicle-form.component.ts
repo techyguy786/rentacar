@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { MakeService } from '../services/make.service';
+import { VehicleService } from '../services/vehicle.service';
 
 @Component({
   selector: 'app-vehicle-form',
@@ -15,13 +15,13 @@ export class VehicleFormComponent implements OnInit {
   };
   features: any;
 
-  constructor(private makeService: MakeService) { }
+  constructor(private vehicleService: VehicleService) { }
 
   ngOnInit() {
-    this.makeService.getMakes().subscribe((data: any[]) => {
+    this.vehicleService.getMakes().subscribe((data: any[]) => {
       this.makes = data;
     });
-    this.makeService.getFeatures().subscribe((data: any[]) => {
+    this.vehicleService.getFeatures().subscribe((data: any[]) => {
       this.features = data;
     });
   }
@@ -43,5 +43,10 @@ export class VehicleFormComponent implements OnInit {
       const index = this.vehicle.features.indexOf(featureId);
       this.vehicle.features.splice(index, 1);
     }
+  }
+
+  submit() {
+    this.vehicleService.create(this.vehicle)
+      .subscribe(data => console.log(data));
   }
 }
