@@ -1,23 +1,26 @@
 <h1>New Vehicle</h1>
-<form (ngSubmit)="submit()">
+<form (ngSubmit)="submit()" #f="ngForm">
   <div class="form-group">
     <label for="make">Make</label>
     <select id="make" class="form-control" (change)="onMakeChange()"
-      [(ngModel)]="vehicle.makeId" name="makeId">
+      [(ngModel)]="vehicle.makeId" name="makeId" required #make="ngModel">
       <option value=""></option>
       <option *ngFor="let make of makes" [value]="make.id">
         {{ make.name }}
       </option>
     </select>
+    <div class="alert alert-danger" *ngIf="make.touched && make.invalid">Please specify the make.</div>
   </div>
   <div class="form-group">
     <label for="model">Model</label>
-    <select id="model" class="form-control" [(ngModel)]="vehicle.modelId" name="modelId">
+    <select id="model" class="form-control" [(ngModel)]="vehicle.modelId" 
+      name="modelId" required #model="ngModel">
       <option value=""></option>
       <option *ngFor="let model of models" [value]="model.id">
         {{ model.name }}
       </option>
     </select>
+    <div class="alert alert-danger" *ngIf="model.touched && model.invalid">Please specify the model.</div>
   </div>
   <p>Is this Vehicle Registered?</p>
   <label for="registered" class="radio-inline">
@@ -38,17 +41,20 @@
   <div class="form-group">
     <label for="contactName">Name</label>
     <input id="contactName" type="text" class="form-control"
-      [(ngModel)]="vehicle.contact.name" name="contactName">
+      [(ngModel)]="vehicle.contact.name" name="contactName" required #contactName="ngModel">
+      <div class="alert alert-danger" *ngIf="contactName.touched && !contactName.valid">Please specify the contact name.</div>
   </div>
   <div class="form-group">
     <label for="contactPhone">Phone</label>
     <input id="contactPhone" type="text" class="form-control"
-      [(ngModel)]="vehicle.contact.phone" name="contactPhone">
+      [(ngModel)]="vehicle.contact.phone" name="contactPhone" required #contactPhone="ngModel">
+      <div class="alert alert-danger" *ngIf="contactPhone.touched && !contactPhone.valid">Please specify the contact phone.</div>
   </div>
   <div class="form-group">
     <label for="contactEmail">Email</label>
     <input id="contactEmail" type="text" class="form-control"
-      [(ngModel)]="vehicle.contact.email" name="contactEmail">
+      [(ngModel)]="vehicle.contact.email" name="contactEmail" required #contactEmail="ngModel">
+      <div class="alert alert-danger" *ngIf="contactEmail.touched && !contactEmail.valid">Please specify the contact email.</div>
   </div>
-  <button class="btn btn-primary">Save</button>
+  <button class="btn btn-primary" [disabled]="f.invalid">Save</button>
 </form> 
