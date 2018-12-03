@@ -25,7 +25,8 @@ export class VehicleFormComponent implements OnInit {
 
   onMakeChange() {
     // tslint:disable-next-line:triple-equals
-    const selectedMake = this.makes.find(m => m.makeId == this.vehicle.make);
+    const selectedMake = this.makes.find(m => m.id == this.vehicle.makeId);
     this.models = selectedMake ? selectedMake.models : [];
+    delete this.vehicle.modelId;
   }
 }

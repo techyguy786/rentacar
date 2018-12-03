@@ -11,9 +11,11 @@ namespace vega.Mapping
         public MappingProfile()
         {
             // Domain to API
-            CreateMap<Make, MakeDto>();
+            CreateMap<Make, MakeDto>()
+                .ForMember(md => md.Id, opt => opt.MapFrom(m => m.MakeId));
             CreateMap<Make, KeyValuePairDto>();
-            CreateMap<Model, KeyValuePairDto>();
+            CreateMap<Model, KeyValuePairDto>()
+                .ForMember(kv => kv.Id, opt => opt.MapFrom(m => m.ModelId));
             CreateMap<Feature, KeyValuePairDto>();
             CreateMap<Vehicle, SaveVehicleDto>()
                 .ForMember(vd => vd.Contact, opt => opt.MapFrom(v => new ContactDto {
